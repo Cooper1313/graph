@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Graph Accessibility Tool</title>
+</head>
+<body>
+  <h1>Graph Accessibility Tool</h1>
+
+  <p>Enter your API Key:</p>
+  <input type="text" id="apiKey" placeholder="API Key">
+
+  <p>Upload an image of your graph:</p>
+  <input type="file" id="graphUpload" accept="image/*">
+
+  <button onclick="submitGraph()">Generate Description</button>
+
+  <p>Graph Description:</p>
+  <div id="graphDescription"></div>
+
+  <p>Visual Representation of Graph:</p>
+  <div id="graphImage"></div>
+
+  <script>
+    function submitGraph() {
+      // Get API Key
+      var apiKey = document.getElementById('apiKey').value;
+
+      // Get the uploaded file
+      var graphFile = document.getElementById('graphUpload').files[0];
+
+      // Check if a file was selected and API key is provided
+      if (!graphFile) {
+        alert("Please upload an image of the graph.");
+        return;
+      }
+      if (!apiKey) {
+        alert("Please enter your API Key.");
+        return;
+      }
+
+      // Prepare the form data
+      var formData = new FormData();
+      formData.append('image', graphFile);
+      formData.append('apiKey', apiKey);
+
+      // Send the image and API key to your backend endpoint
+      fetch('/api/graph-description', {  // Replace with your actual endpoint
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Display the graph description
+        document.getElementById('graphDescription').innerText = data.description;
+
+        // Display the original image
+        document.getElementById('graphImage').innerHTML = '<img src="' + URL.createObjectURL(graphFile) + '" alt="Uploaded Graph">';
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('graphDescription').innerText = "Error generating description.";
+      });
+    }
+  </script>
+</body>
+</html>
